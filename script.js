@@ -306,7 +306,13 @@ const con = mysql.createConnection(
             console.table("Tables succesfully deleted".green)
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
-   
+    
+      //Show total budgets of departments
+      totalBudgetOfDepartment(){
+         con.promise().query("SELECT departments.name as department, sum(salary) AS salary FROM roles LEFT JOIN departments ON roles.department_id = departments.id GROUP BY name").then( ([rows,fields]) => {
+            console.table(cTable.getTable(rows))
+           }).then(()=>{ this.userChoice()}).catch(console.log);    
+      }
    
  }
  
