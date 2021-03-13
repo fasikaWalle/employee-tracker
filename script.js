@@ -333,9 +333,22 @@ const con = mysql.createConnection(
       deleteTablesRecords(){
          con.promise().query("DELETE e1,r1,d1  FROM departments AS d1 LEFT JOIN roles r1 ON r1.department_id=d1.id LEFT JOIN employee e1 ON e1.role_id=r1.id").then( ([rows,fields]) => {
             console.table("Tables succesfully deleted".green)
+            this.resetId();
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
-      //Show total budgets of departments
+     //reset id  after deleting all the table records when we add data's it will start with 1
+      resetId(){
+      con.promise().query('ALTER TABLE employee AUTO_INCREMENT = 0').then(([rows,fields])=>{
+         console.log("success")
+         con.promise().query('ALTER TABLE roles AUTO_INCREMENT = 0').then(([rows,fields])=>{
+            console.log("success")
+            con.promise().query('ALTER TABLE departments AUTO_INCREMENT = 0').then(([rows,fields])=>{
+               console.log("success")
+            }).catch(console.log)
+         }).catch(console.log)
+      }).catch(console.log)    
+      }
+       // Show total budgets of departments
       totalBudgetOfDepartment(){
          con.promise().query("SELECT departments.name as department, sum(salary) AS salary FROM roles LEFT JOIN departments ON roles.department_id = departments.id GROUP BY name").then( ([rows,fields]) => {
             if(rows.length===0){
