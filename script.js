@@ -93,6 +93,26 @@ const con = mysql.createConnection(
          console.table(cTable.getTable(rows))}).then(()=>{this.userChoice()}).catch(console.log);
          }
    
+         //Add department
+         addDepartment(){
+            inquirer.prompt([{
+               type:"input",
+               name:"name",
+               message:"Please insert department name",
+               validate: function (input) {return (input? true :false)}
+            }]).then(({name})=>{
+               // let checkDepartment= this.checkDeapartmentExsistance(name);
+               // if(checkDepartment){
+               //    return;
+               // }
+               con.promise().query('INSERT INTO departments(name) VALUES(?)',[name])
+               .then( ([rows,fields]) => {
+               console.log("Department succesfully added!!".green)
+               }).then(()=>{this.userChoice()}).catch(console.log)
+            }).catch((error) => {
+               throw error;
+             });
+         } 
     
     
     
