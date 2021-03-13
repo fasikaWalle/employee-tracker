@@ -293,6 +293,12 @@ const con = mysql.createConnection(
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
     
+      //View employee by department
+      viewEmployeesByDepartment(){
+         con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee,departments.name AS department FROM employee LEFT JOIN roles ON employee.role_id =roles.id LEFT JOIN departments ON roles.department_id =departments.id").then( ([rows,fields]) => {
+            console.table(cTable.getTable(rows))
+           }).then(()=>{ this.userChoice()}).catch(console.log); 
+      }
    
    
    
