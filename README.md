@@ -12,13 +12,16 @@ This command line application is used to manages company's employee database whi
 
 
 ## Installation
+First you have to make sure that you have node js in your system if you don't have you can install it from https://nodejs.org/en/  and make sure you install mysql if not just click the following link and download it https://dev.mysql.com/downloads/mysql/ then you open your terminal and type npm install to install all the necessary dependencies which are used for this application.
 ```npm install```  
 ## Usage
 - Clone the code from the repository to local computer
 - Open the terminal
 - write npm install in the terminal and hit enter to install all the neccesary dependencies that this application uses
-- Write npm start to run the application
-- Choose whatever you want to do
+- Write mysql -u (database user name) -p then enter please insert password window will display then you have to insert your database password.
+- Inorder to use the database you have to create it by writing source db/schema.sql then enter this will create the table structure then there is already a data on seeds.sql file so write source db/seeds.sql this will fill your tables with pre defined data after that just write quit and back to the terminal.
+- Inorder to start the application write npm start.
+- Choose whatever you want to do.
 ![project image](./Assets/images/employee-tracker.png)
 
 
