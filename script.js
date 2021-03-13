@@ -151,7 +151,66 @@ const con = mysql.createConnection(
           });
          }).catch(console.log);
       } 
-    
+         
+  //Add an employee
+  addEmployee(){
+   con.promise().query('SELECT roles.title AS roles FROM roles').then( ([rows,fields]) => {
+      let role=[]
+      rows.map((data)=>{role.push(data.roles)})
+     con.promise().query("SELECT  concat(employee.first_name,' ',employee.last_name) AS name FROM employee").then( ([rows,fields]) => {
+        let managers=["none"]
+      rows.map((data)=>{managers.push(data.name)})
+     
+
+      inquirer.prompt([{
+         type:"input",
+         name:"firstName",
+         message:"Please insert first name",
+         validate: function (input) {return (input? true :false)}
+      },
+      {
+         type:"input",
+         name:"lastName",
+         message:"Please insert employee's last name",
+         validate: function (input) {return (input? true :false)}
+      },
+      {
+         type:"list",
+         name:"role",
+         message:"Please insert employee's role",
+        choices:role
+      },
+      {
+         type:"list",
+         name:"manager",
+         message:"Please insert employee's manager name",
+         choices:managers
+      }]).then(({firstName,lastName,role,manager})=>{
+      //   this.setEmployee(firstName,lastName,role,manager)
+      let managerId;
+      let roleId;
+      manager=manager.split(" ")
+      if(manager.length==1)manager[1]="none";
+        con.promise().query("SELECT employee.id FROM employee WHERE first_name =? && last_name=?",[manager[0],manager[1]]).then( ([rows,fields]) => {
+        if(rows[0]){
+         managerId=rows[0].id;
+        } else{
+        managerId=null;
+        }
+         con.promise().query('SELECT id FROM roles WHERE title =?',[role]).then(([rows,fields])=>{
+         roleId=rows[0].id;
+        con.promise().query('INSERT INTO employee(first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)',[firstName,lastName,roleId,managerId]).then(([rows,fields])=>{
+         console.log('employee successfully added'.green);
+        
+      }).then(()=>{this.userChoice()}).catch(console.log)
+      }).catch(console.log)
+      }).catch(console.log)
+      }).catch((error) => {
+         throw error;
+       });
+    }).catch(console.log)
+   }).catch(console.log);
+  }
     
     
     
