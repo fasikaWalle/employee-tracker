@@ -25,9 +25,64 @@ const con = mysql.createConnection(
          throw error;
        });
    };
+    //Check user choice
+    checkChoice(type){
+      switch(type){
+         case 'View all departments':
+         this.viewAllDepartments();
+         break;
+         case 'View all roles':
+          this.viewAllRoles()
+          break;
+          case 'View all employees':
+             this.viewAllEmployees()
+          break;
+          case 'Add a department':
+             this.addDepartment()
+          break;
+          case 'Add a role':
+              this.addRole()
+          break;
+          case 'Add an employee':
+             this.addEmployee()
+          break;
+          case 'Update an employee role':
+          this.updateEmployeeRole()
+          break;
+          case 'Update employee manager':
+            this.updateEmployeeManager()
+            break;
+            case 'View employee by manager':
+            this.viewEmployeeByManager()
+            break;
+            case 'View employee by department':
+               this.viewEmployeesByDepartment()
+               break;
+            case 'Delete tables records':
+               this.deleteTablesRecords()
+               break;
+            case 'Total budget of a department':
+               this.totalBudgetOfDepartment()
+               break;
+      }
+    } 
    
+ //View all departments
+ viewAllDepartments(){
+   con.promise().query('SELECT departments.id,departments.name FROM departments').then( ([rows,fields]) => {
+      console.table(cTable.getTable(rows))
+     }).then(()=>{ this.userChoice()}).catch(console.log);
+   }
    
-   
+    
+    
+    
+    
+    
+    
+    
+    
+    
    
    
    
