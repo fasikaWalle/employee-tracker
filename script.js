@@ -114,7 +114,43 @@ const con = mysql.createConnection(
              });
          } 
     
-    
+        //Add role
+        addRole(){
+         let departments=[]
+         con.promise().query('SELECT departments.name AS department FROM departments').then( ([rows,fields]) => {
+         rows.map((data)=>{departments.push(data.department)})
+         inquirer.prompt([{
+            type:"input",
+            name:"name",
+            message:"Please insert title",
+            validate: function (input) {return (input? true :false)}
+         },
+         {
+            type:"input",
+            name:"salary",
+            message:"Please insert salary"
+         },
+         {
+            type:"list",
+            name:"department",
+            message:"Please select department name",
+            choices:departments
+         }]).then(({name,salary,department})=>{
+            let departmentId;
+            con.promise().query('SELECT id FROM departments WHERE name =?',[department]).then(([rows,fields]) => {
+            departmentId=rows[0].id;
+             con.promise().query(`INSERT INTO roles(title,salary,department_id) VALUES(?,?,?)`,[name,salary,departmentId])
+              .then( ([rows,fields]) => {
+               //  console.table(rows);  
+               console.log("Role succesfully added!!".green)
+              }).then(()=>{this.userChoice()}).catch(console.log) 
+            }).catch(console.log)
+            
+         }).catch((error) => {
+            throw error;
+          });
+         }).catch(console.log);
+      } 
     
     
     
