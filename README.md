@@ -23,6 +23,7 @@ First you have to make sure that you have node js in your system if you don't ha
 - Inorder to start the application write npm start.
 - Choose whatever you want to do.
 - Please make sure when you delete the tables and try to insert data's you have to insert department,roles and employee respectively because they are related to one another. 
+-Walkthrough video link (https://drive.google.com/file/d/1remHHEO099pIyw3TA7qUWT9am6NKZbAA/view?usp=sharing)
 ![project image](./Assets/images/employee-tracker.png)
 
 
