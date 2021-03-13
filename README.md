@@ -22,7 +22,7 @@ First you have to make sure that you have node js in your system if you don't ha
 - Inorder to use the database you have to create it by writing source db/schema.sql then enter this will create the table structure then there is already a data on seeds.sql file so write source db/seeds.sql this will fill your tables with pre defined data after that just write quit and back to the terminal.
 - Inorder to start the application write npm start.
 - Choose whatever you want to do.
-- Please make sure when you delete the tables and try to insert data's you have to follow which table if filled first because they are related to one another. 
+- Please make sure when you delete the tables and try to insert data's you have to insert department,roles and employee respectively because they are related to one another. 
 ![project image](./Assets/images/employee-tracker.png)
 
 

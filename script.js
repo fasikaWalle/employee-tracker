@@ -86,12 +86,6 @@ const con = mysql.createConnection(
         }).then(()=>{ this.userChoice()}).catch(console.log);
   
       }
-        
-      // checkDeapartmentExsistance(name){
-      //    if(name==="Sales"){
-      //       console.log("exsist")
-      //    }
-      // }
       //View all employees
       viewAllEmployees(){
          con.promise().query("SELECT employee.id,employee.first_name,employee.last_name,roles.title,departments.name AS departments,roles.salary, concat(mgr.first_name,' ',mgr.last_name) AS Manager FROM employee LEFT JOIN roles ON employee.role_id=roles.id LEFT JOIN departments ON roles.department_id=departments.id  LEFT JOIN employee mgr ON employee.manager_id=mgr.id").then( ([rows,fields]) => {
