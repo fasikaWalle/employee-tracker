@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const cTable = require('console.table');
 const figlet = require('figlet');
 const colors=require('colors');
+const emoji = require('node-emoji');
 
 //Connect the database
 const con = mysql.createConnection(
@@ -70,14 +71,18 @@ const con = mysql.createConnection(
  //View all departments
  viewAllDepartments(){
    con.promise().query('SELECT departments.id,departments.name FROM departments').then( ([rows,fields]) => {
-      console.table(cTable.getTable(rows))
+      if(rows.length===0){
+         console.log("Oops there is no data to display" + emoji.get('cry'))
+         }else{console.table(cTable.getTable(rows))}
      }).then(()=>{ this.userChoice()}).catch(console.log);
    }
    //Vew all roles
    viewAllRoles(){
       con.promise().query('SELECT roles.id,roles.title,roles.salary,departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id=departments.id').then( ([rows,fields]) => {
          //  console.table(rows);
-          console.table(cTable.getTable(rows))
+         if(rows.length===0){
+            console.log("Oops there is no data to display" + emoji.get('cry'))
+            }else{console.table(cTable.getTable(rows))}
         }).then(()=>{ this.userChoice()}).catch(console.log);
   
       }
@@ -90,30 +95,37 @@ const con = mysql.createConnection(
       //View all employees
       viewAllEmployees(){
          con.promise().query("SELECT employee.id,employee.first_name,employee.last_name,roles.title,departments.name AS departments,roles.salary, concat(mgr.first_name,' ',mgr.last_name) AS Manager FROM employee LEFT JOIN roles ON employee.role_id=roles.id LEFT JOIN departments ON roles.department_id=departments.id  LEFT JOIN employee mgr ON employee.manager_id=mgr.id").then( ([rows,fields]) => {
-         console.table(cTable.getTable(rows))}).then(()=>{this.userChoice()}).catch(console.log);
+            if(rows.length===0){
+            console.log("Oops there is no data to display" + emoji.get('cry'))
+            }else{console.table(cTable.getTable(rows)) }
+         }).then(()=>{this.userChoice()}).catch(console.log);
          }
    
          //Add department
-         addDepartment(){
-            inquirer.prompt([{
+               addDepartment(){
+              inquirer.prompt([{
                type:"input",
                name:"name",
                message:"Please insert department name",
                validate: function (input) {return (input? true :false)}
             }]).then(({name})=>{
-               // let checkDepartment= this.checkDeapartmentExsistance(name);
-               // if(checkDepartment){
-               //    return;
-               // }
-               con.promise().query('INSERT INTO departments(name) VALUES(?)',[name])
-               .then( ([rows,fields]) => {
-               console.log("Department succesfully added!!".green)
-               }).then(()=>{this.userChoice()}).catch(console.log)
+               let count= 0;
+               con.promise().query('SELECT departments.name FROM departments').then(([rows,fields]) => {
+                  rows.map(list=>{
+                  if(list.name.toLowerCase()===name.toLowerCase()){count++}})
+                  if(count>0){console.log("Department already exist".red)
+                     this.userChoice()
+                  }else{
+                     con.promise().query('INSERT INTO departments(name) VALUES(?)',[name])
+                     .then( ([rows,fields]) => {
+                     console.log("Department succesfully added!!".green)
+                     }).then(()=>{this.userChoice()}).catch(console.log)
+                    }
+            }).catch(console.log)
             }).catch((error) => {
                throw error;
              });
          } 
-    
         //Add role
         addRole(){
          let departments=[]
@@ -123,12 +135,13 @@ const con = mysql.createConnection(
             type:"input",
             name:"name",
             message:"Please insert title",
-            validate: function (input) {return (input? true :false)}
+            validate:function (input) {return (input? true :false)}
          },
          {
             type:"input",
             name:"salary",
-            message:"Please insert salary"
+            message:"Please insert salary",
+            validate:function (input) {return (input? true :false)}
          },
          {
             type:"list",
@@ -136,22 +149,38 @@ const con = mysql.createConnection(
             message:"Please select department name",
             choices:departments
          }]).then(({name,salary,department})=>{
+            let count = 0;
             let departmentId;
+            con.promise().query('SELECT roles.title FROM roles').then(([rows,fields]) => {
+               rows.map(list=>{
+               if(list.title.toLowerCase()===name.toLowerCase()){count++}})
+               if(count>0){console.log("Role already exist".red)
+               this.userChoice()
+               }else{
             con.promise().query('SELECT id FROM departments WHERE name =?',[department]).then(([rows,fields]) => {
             departmentId=rows[0].id;
              con.promise().query(`INSERT INTO roles(title,salary,department_id) VALUES(?,?,?)`,[name,salary,departmentId])
-              .then( ([rows,fields]) => {
-               //  console.table(rows);  
+              .then( ([rows,fields]) => { 
                console.log("Role succesfully added!!".green)
               }).then(()=>{this.userChoice()}).catch(console.log) 
             }).catch(console.log)
-            
+                 }
+         }).catch(console.log)
+    
          }).catch((error) => {
-            throw error;
-          });
+            throw error});
          }).catch(console.log);
-      } 
-         
+      }  
+      //check the role if it is already in database 
+      checkRoleTitle(name){
+         let count=0;
+         con.promise().query("SELECT roles.title FROM roles").then( ([rows,fields]) => {
+         let roleTitle=[]
+         rows.map(role=>{roleTitle.push(role.title)})
+         roleTitle.map(role=>{ if(role===name){count++}})
+          if(count>0){console.log("true")}
+         }).catch(console.log)      
+      }
   //Add an employee
   addEmployee(){
    con.promise().query('SELECT roles.title AS roles FROM roles').then( ([rows,fields]) => {
@@ -160,7 +189,6 @@ const con = mysql.createConnection(
      con.promise().query("SELECT  concat(employee.first_name,' ',employee.last_name) AS name FROM employee").then( ([rows,fields]) => {
         let managers=["none"]
       rows.map((data)=>{managers.push(data.name)})
-     
 
       inquirer.prompt([{
          type:"input",
@@ -254,8 +282,6 @@ const con = mysql.createConnection(
         }).catch(console.log)
       }).catch(console.log)
    }
-    
-    
       //Update employee manager 
       updateEmployeeManager(){
          let employeeName=[];  
@@ -277,7 +303,7 @@ const con = mysql.createConnection(
          let managerId;
          name=name.split(' ')
          manager=manager.split(' ')
-         con.promise().query('SELECT id  FROM employee WHERE first_name=? && last_name=?',[manager[0],manager[1]]).then(([rows,fields])=>{
+            con.promise().query('SELECT id  FROM employee WHERE first_name=? && last_name=?',[manager[0],manager[1]]).then(([rows,fields])=>{
             managerId=rows[0].id
             con.promise().query('UPDATE employee SET manager_id=? WHERE first_name=? && last_name=?',[managerId,name[0],name[1]]).then(([rows,fields])=>{
             console.log("1 employee manager succesfully updated!!".green)}).then(()=>{this.userChoice()}).catch(console.log)  
@@ -289,30 +315,34 @@ const con = mysql.createConnection(
        //View employee by manager
        viewEmployeeByManager(){
          con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee, concat(mgr.first_name,' ',mgr.last_name) AS Manager FROM employee INNER JOIN employee mgr  ON employee.manager_id=mgr.id").then( ([rows,fields]) => {
-            console.table(cTable.getTable(rows))
-           }).then(()=>{ this.userChoice()}).catch(console.log); 
+            if(rows.length===0){
+               console.log("Oops there is no data to display" + emoji.get('cry'))
+               }else{console.table(cTable.getTable(rows)) } 
+         }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
     
       //View employee by department
       viewEmployeesByDepartment(){
          con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee,departments.name AS department FROM employee LEFT JOIN roles ON employee.role_id =roles.id LEFT JOIN departments ON roles.department_id =departments.id").then( ([rows,fields]) => {
-            console.table(cTable.getTable(rows))
+            if(rows.length===0){
+               console.log("Oops there is no data to display" + emoji.get('cry'))
+               }else{console.table(cTable.getTable(rows))}
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
-   
       // delete table records
       deleteTablesRecords(){
-         con.promise().query("pragma foreign_keys = on; DELETE FROM departments").then( ([rows,fields]) => {
+         con.promise().query("DELETE e1,r1,d1  FROM departments AS d1 LEFT JOIN roles r1 ON r1.department_id=d1.id LEFT JOIN employee e1 ON e1.role_id=r1.id").then( ([rows,fields]) => {
             console.table("Tables succesfully deleted".green)
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
-    
       //Show total budgets of departments
       totalBudgetOfDepartment(){
          con.promise().query("SELECT departments.name as department, sum(salary) AS salary FROM roles LEFT JOIN departments ON roles.department_id = departments.id GROUP BY name").then( ([rows,fields]) => {
-            console.table(cTable.getTable(rows))
+            if(rows.length===0){
+               console.log("Oops there is no data to display" + emoji.get('cry'))
+               }else{console.table(cTable.getTable(rows)) }
            }).then(()=>{ this.userChoice()}).catch(console.log);    
       }
-   
  }
- 
+ new employees().userChoice()
+
