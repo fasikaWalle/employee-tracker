@@ -73,6 +73,14 @@ const con = mysql.createConnection(
       console.table(cTable.getTable(rows))
      }).then(()=>{ this.userChoice()}).catch(console.log);
    }
+   //Vew all roles
+   viewAllRoles(){
+      con.promise().query('SELECT roles.id,roles.title,roles.salary,departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id=departments.id').then( ([rows,fields]) => {
+         //  console.table(rows);
+          console.table(cTable.getTable(rows))
+        }).then(()=>{ this.userChoice()}).catch(console.log);
+  
+      }
    
     
     
