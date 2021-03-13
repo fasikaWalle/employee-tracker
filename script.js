@@ -211,7 +211,49 @@ const con = mysql.createConnection(
     }).catch(console.log)
    }).catch(console.log);
   }
-    
+   
+  //update employee role 
+  updateEmployeeRole(){
+   let data=[]
+   let role=[]
+   let employeeName;
+   con.promise().query('SELECT employee.first_name,employee.last_name FROM employee').then( ([rows,fields]) => {
+      rows.map((list)=>{data.push(list.first_name + ' ' + list.last_name)})
+      con.promise().query('SELECT * FROM roles').then(([rows,fields])=>{
+         rows.map((roleList)=>{
+            role.push(roleList.title)
+         }) 
+         inquirer.prompt([  
+            {
+               type:'list',
+               name:'name',
+               message:'select an employee to update and their new role',
+               choices:data
+            }
+         ]).then(({name})=>{
+            employeeName=name;
+            inquirer.prompt([  
+               {
+                  type:'list',
+                  name:'role',
+                  message:'Select the role for the selected employee',
+                  choices:role
+               }
+            ]).then(({role})=>{
+               employeeName=employeeName.split(" ")
+               con.promise().query('SELECT id  FROM roles WHERE title=?',[role]).then(([rows,fields])=>{
+               role=rows[0].id
+               con.promise().query('UPDATE employee SET role_id=? WHERE first_name=? && last_name=?',[role,employeeName[0],employeeName[1]]).then(([rows,fields])=>{
+               console.log("1 employee succesfully updated".green)
+            }).then(()=>{this.userChoice()}).catch(console.log)
+            }).catch(console.log)
+           }) 
+         }).catch((error) => {
+            throw error;
+          });
+        }).catch(console.log)
+      }).catch(console.log)
+   }
     
     
     
