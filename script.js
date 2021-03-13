@@ -317,7 +317,7 @@ const con = mysql.createConnection(
     
       //View employee by department
       viewEmployeesByDepartment(){
-         con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee,departments.name AS department FROM employee LEFT JOIN roles ON employee.role_id =roles.id LEFT JOIN departments ON roles.department_id =departments.id").then( ([rows,fields]) => {
+         con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee,departments.name AS department FROM employee LEFT JOIN roles ON employee.role_id =roles.id LEFT JOIN departments ON roles.department_id =departments.id ORDER BY department_id").then( ([rows,fields]) => {
             if(rows.length===0){
                console.log("Oops there is no data to display" + emoji.get('cry'))
                }else{console.table(cTable.getTable(rows))}
@@ -333,11 +333,8 @@ const con = mysql.createConnection(
      //reset id  after deleting all the table records when we add data's it will start with 1
       resetId(){
       con.promise().query('ALTER TABLE employee AUTO_INCREMENT = 0').then(([rows,fields])=>{
-         console.log("success")
          con.promise().query('ALTER TABLE roles AUTO_INCREMENT = 0').then(([rows,fields])=>{
-            console.log("success")
             con.promise().query('ALTER TABLE departments AUTO_INCREMENT = 0').then(([rows,fields])=>{
-               console.log("success")
             }).catch(console.log)
          }).catch(console.log)
       }).catch(console.log)    
