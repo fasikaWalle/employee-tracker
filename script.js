@@ -286,7 +286,12 @@ const con = mysql.createConnection(
          }).catch(console.log)  
       }
     
-    
+       //View employee by manager
+       viewEmployeeByManager(){
+         con.promise().query("SELECT concat(employee.first_name,' ',employee.last_name) AS employee, concat(mgr.first_name,' ',mgr.last_name) AS Manager FROM employee INNER JOIN employee mgr  ON employee.manager_id=mgr.id").then( ([rows,fields]) => {
+            console.table(cTable.getTable(rows))
+           }).then(()=>{ this.userChoice()}).catch(console.log); 
+      }
     
    
    
