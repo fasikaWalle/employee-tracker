@@ -19,8 +19,8 @@ First you have to make sure that you have node js in your system if you don't ha
 - Open the terminal
 - write npm install in the terminal and hit enter to install all the neccesary dependencies that this application uses
 - Write mysql -u (database user name) -p then enter, please insert password window will display then you have to insert your database password.
-- Inorder to use the database you have to create it by writing source db/schema.sql then enter this will create the table structure then there is already a data on seeds.sql file so write source db/seeds.sql this will fill your tables with pre defined data after that just write quit and back to the terminal.
-- Inorder to start the application write npm start.
+- In order to use the database you have to create it by writing source db/schema.sql then enter this will create the table structure then there is already a data on seeds.sql file so write source db/seeds.sql this will fill your tables with pre defined data after that just write quit and back to the terminal.
+- In order to start the application write npm start.
 - Choose whatever you want to do.
 - Please make sure when you delete the tables and try to insert data's you have to insert department,roles and employee respectively because they are related to one another. 
 - Walkthrough video link (https://drive.google.com/file/d/1remHHEO099pIyw3TA7qUWT9am6NKZbAA/view?usp=sharing)
