@@ -256,6 +256,35 @@ const con = mysql.createConnection(
    }
     
     
+      //Update employee manager 
+      updateEmployeeManager(){
+         let employeeName=[];  
+         con.promise().query('SELECT employee.first_name,employee.last_name FROM employee').then( ([rows,fields]) => {
+            rows.map((list)=>{employeeName.push(list.first_name + ' ' + list.last_name)})         
+            inquirer.prompt([  
+               {
+                  type:'list',
+                  name:'name',
+                  message:'select an employee to update and their manager',
+                  choices:employeeName
+               },{
+                  type:'list',
+                  name:'manager',
+                  message:'select a manager',
+                  choices:employeeName  
+               }
+            ]).then(({name,manager})=>{
+         let managerId;
+         name=name.split(' ')
+         manager=manager.split(' ')
+         con.promise().query('SELECT id  FROM employee WHERE first_name=? && last_name=?',[manager[0],manager[1]]).then(([rows,fields])=>{
+            managerId=rows[0].id
+            con.promise().query('UPDATE employee SET manager_id=? WHERE first_name=? && last_name=?',[managerId,name[0],name[1]]).then(([rows,fields])=>{
+            console.log("1 employee manager succesfully updated!!".green)}).then(()=>{this.userChoice()}).catch(console.log)  
+         }).catch(console.log)  
+            })
+         }).catch(console.log)  
+      }
     
     
     
