@@ -300,6 +300,12 @@ const con = mysql.createConnection(
            }).then(()=>{ this.userChoice()}).catch(console.log); 
       }
    
+      // delete table records
+      deleteTablesRecords(){
+         con.promise().query("pragma foreign_keys = on; DELETE FROM departments").then( ([rows,fields]) => {
+            console.table("Tables succesfully deleted".green)
+           }).then(()=>{ this.userChoice()}).catch(console.log); 
+      }
    
    
  }
