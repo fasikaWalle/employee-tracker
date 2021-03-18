@@ -20,7 +20,7 @@ role_id INT NOT NULL,
 manager_id INT DEFAULT NULL,
 PRIMARY KEY(id),
 FOREIGN KEY(role_id) REFERENCES roles(id)ON DELETE CASCADE ,
-FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE
+FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE NULL
 );
 
 -- DELETE departments.*,roles.*,employee.* FROM roles  JOIN departments WHERE roles.department_id=departments.iverJOIN employee WHERE employee.role_id=roles.id
