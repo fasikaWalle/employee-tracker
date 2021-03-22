@@ -125,6 +125,11 @@ const con = mysql.createConnection(
          let departments=[]
          con.promise().query('SELECT departments.name AS department FROM departments').then( ([rows,fields]) => {
          rows.map((data)=>{departments.push(data.department)})
+         if(!departments.length){
+            console.log("Please enter a department first".red)
+            this.userChoice()
+            return;
+         }
          inquirer.prompt([{
             type:"input",
             name:"name",
@@ -132,7 +137,7 @@ const con = mysql.createConnection(
             validate:function (input) {return (input? true :false)}
          },
          {
-            type:"input",
+            type:"number",
             name:"salary",
             message:"Please insert salary",
             validate:function (input) {return (input? true :false)}
